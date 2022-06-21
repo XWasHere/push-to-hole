@@ -12,4 +12,26 @@
 #    GNU General Public License for more details.
 #
 #    You should have received a copy of the GNU General Public License
-#    along with this program.  If not, see <https://www.gnu.org/licenses/>.Name your file…
+#    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+CXX        = g++
+CXX_FLAGS  = 
+CXX_LFLAGS = 
+
+all: cli
+
+.PHONY: clean cli all
+
+cli: out/push-to-hole
+
+clean:
+	mkdir -p build
+	mkdir -p out
+	rm -f build/*
+	rm -f out/*
+
+out/push-to-hole: build/cli.o
+	${CXX} ${CXX_LFLAGS} build/cli.o -o out/push-to-hole
+	
+build/cli.o: src/cli.cc
+	${CXX} ${CXX_FLAGS} -c src/cli.cc -o build/cli.o
