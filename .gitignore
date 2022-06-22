@@ -2,3 +2,5 @@ test.txt
 build
 out
 .vscode
+
+gcm.cache

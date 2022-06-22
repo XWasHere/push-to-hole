@@ -15,14 +15,16 @@
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 CXX        = g++
-CXX_FLAGS  = 
+CXX_FLAGS  = --std=c++23
 CXX_LFLAGS = 
 
-all: cli
+all: cli libhole
 
-.PHONY: clean cli all
+.PHONY: clean cli all libhole
 
-cli: out/push-to-hole
+libhole: out/libhole.so
+out/libhole.so: src/hole.cc src/hole.h src/client.cc
+	${CXX} ${CXX_FLAGS} -fPIC -rdynamic -shared src/hole.cc src/client.cc -o out/libhole.so -DHOLE_MODULE -lcurl
 
 clean:
 	mkdir -p build
@@ -30,8 +32,9 @@ clean:
 	rm -f build/*
 	rm -f out/*
 
-out/push-to-hole: build/cli.o
-	${CXX} ${CXX_LFLAGS} build/cli.o -o out/push-to-hole
+cli: out/push-to-hole 
+out/push-to-hole: build/cli.o libhole
+	${CXX} ${CXX_LFLAGS} build/cli.o -o out/push-to-hole -Lout -lhole
 	
 build/cli.o: src/cli.cc
 	${CXX} ${CXX_FLAGS} -c src/cli.cc -o build/cli.o

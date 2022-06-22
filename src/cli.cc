@@ -16,6 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#include <cstdlib>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -26,6 +27,8 @@ extern "C" {
 
 #include <string>
 
+#include "hole.h"
+
 enum struct pth_op {
     INVAL, UPLOAD
 };
@@ -33,12 +36,16 @@ enum struct pth_op {
 struct pth_args {
     pth_op op = pth_op::INVAL;
 
-    std::string key;
+    std::string url;
+
+    char*       key = 0;
 
     char*       ekey = 0;
     std::string group;
 
     std::string filename;
+
+    int __parg = 0;
 };
 
 const char* argp_program_version = "0.0.1";
@@ -84,7 +91,7 @@ argp argp_data = {
                 pstate->op = pth_op::UPLOAD;
                 break;
             case 'k':
-                pstate->key = arg;
+                pstate->key = strdup(arg);
                 break;
             case 'g':
                 pstate->group = arg;
@@ -93,7 +100,9 @@ argp argp_data = {
                 pstate->ekey = strdup(arg);
                 break;
             case ARGP_KEY_ARG:
-                pstate->filename = arg;
+                if      (pstate->__parg == 0) pstate->url = arg;
+                else if (pstate->__parg == 1) pstate->filename = arg;
+                pstate->__parg++;
                 break;
             default:
                 return ARGP_ERR_UNKNOWN;
@@ -110,17 +119,29 @@ int main(int argc, char** argv) {
                 exit(1);
     }
 
-    
+    hole::hole_global_init();
+    atexit(hole::hole_global_fini);
+
+    hole::hole_client cl(args.url, args.key);
+
     if (args.op == pth_op::UPLOAD) {
-                              printf("upload:\n");
-                              printf(" key: %s\n", args.key.c_str());
+                              printf("upload \"%s\":\n", args.url.c_str());
+                              printf(" key: %s\n", args.key);
                               printf(" file: %s\n", args.filename.c_str());
         if (args.group != "") printf(" group: %s\n", args.group.c_str());
         if (args.ekey  != 0)  printf(" encryption key: %s\n", args.ekey);
+
+        hole::hole_object res;
+        cl.create_object(res, args.filename, args.group, args.ekey);
     }
 
     if (args.ekey) {
         explicit_bzero(args.ekey, strlen(args.ekey));
         free(args.ekey);
+    }
+
+    if (args.key) {
+        explicit_bzero(args.key, strlen(args.key));
+        free(args.key);
     }
 }
