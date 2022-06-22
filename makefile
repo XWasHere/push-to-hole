@@ -16,6 +16,7 @@
 
 CXX        = g++
 CXX_FLAGS  = --std=c++23
+CXX_SFLAGS = -fPIC
 CXX_LFLAGS = 
 
 all: cli libhole
@@ -23,8 +24,17 @@ all: cli libhole
 .PHONY: clean cli all libhole
 
 libhole: out/libhole.so
-out/libhole.so: src/hole.cc src/hole.h src/client.cc
-	${CXX} ${CXX_FLAGS} -fPIC -rdynamic -shared src/hole.cc src/client.cc -o out/libhole.so -DHOLE_MODULE -lcurl
+out/libhole.so: build/hole.o build/client.o build/object.o
+	${CXX} ${CXX_LFLAGS} ${CXX_SFLAGS} -rdynamic -shared build/hole.o build/client.o build/object.o -o out/libhole.so -lcurl
+
+build/client.o: src/client.cc src/client.h src/object.h
+	${CXX} ${CXX_FLAGS} ${CXX_SFLAGS} -c src/client.cc -o build/client.o
+
+build/hole.o: src/hole.cc src/hole.h
+	${CXX} ${CXX_FLAGS} ${CXX_SFLAGS} -c src/hole.cc -o build/hole.o
+
+build/object.o: src/object.cc src/object.h
+	${CXX} ${CXX_FLAGS} ${CXX_SFLAGS} -c src/object.cc -o build/object.o
 
 clean:
 	mkdir -p build

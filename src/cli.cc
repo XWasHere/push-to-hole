@@ -1,6 +1,6 @@
 /*
     hole uploader
-    Copyright (C) 2022 xashere
+    Copyright (C) 2022 xwashere
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -126,10 +126,10 @@ int main(int argc, char** argv) {
 
     if (args.op == pth_op::UPLOAD) {
                               printf("upload \"%s\":\n", args.url.c_str());
-                              printf(" key: %s\n", args.key);
+        if (args.key)         printf(" key: %s\n", args.key);
                               printf(" file: %s\n", args.filename.c_str());
         if (args.group != "") printf(" group: %s\n", args.group.c_str());
-        if (args.ekey  != 0)  printf(" encryption key: %s\n", args.ekey);
+        if (args.ekey)        printf(" encryption key: %s\n", args.ekey);
 
         hole::hole_object res;
         cl.create_object(res, args.filename, args.group, args.ekey);

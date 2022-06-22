@@ -1,6 +1,6 @@
 /*
     hole uploader
-    Copyright (C) 2022 xashere
+    Copyright (C) 2022 xwashere
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -16,27 +16,12 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <curl/curl.h>
-#include <exception>
-#include <stdexcept>
-#include <string>
+#pragma once
+
+#include "client.h"
+#include "object.h"
 
 namespace hole {
     void hole_global_init();
     void hole_global_fini();
-
-    struct hole_object {
-
-    };
-
-    struct hole_client {
-        hole_client(const std::string& url, const char* key);
-        ~hole_client();
-
-        int create_object(hole_object& object, const std::string& filename, const std::string& group, const char* ekey = 0);
-
-        std::string __url;
-        const char* __key = 0;
-        CURL*       __session = 0;
-    };
 };

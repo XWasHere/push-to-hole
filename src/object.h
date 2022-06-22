@@ -16,16 +16,10 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <curl/curl.h>
-
-#include "hole.h"
+#pragma once
 
 namespace hole {
-    void hole_global_init() {
-        curl_global_init(CURL_GLOBAL_DEFAULT);
-    }
+    struct hole_object {
 
-    void hole_global_fini() {
-        curl_global_cleanup();
-    }
-};
+    };
+}

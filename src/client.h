@@ -16,16 +16,22 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <curl/curl.h>
+#pragma once
 
-#include "hole.h"
+#include <curl/curl.h>
+#include <string>
+
+#include "object.h"
 
 namespace hole {
-    void hole_global_init() {
-        curl_global_init(CURL_GLOBAL_DEFAULT);
-    }
+    struct hole_client {
+        hole_client(const std::string& url, const char* key);
+        ~hole_client();
 
-    void hole_global_fini() {
-        curl_global_cleanup();
-    }
-};
+        int create_object(hole_object& object, const std::string& filename, const std::string& group, const char* ekey = 0);
+
+        std::string __url;
+        const char* __key = 0;
+        CURL*       __session = 0;
+    };
+}
